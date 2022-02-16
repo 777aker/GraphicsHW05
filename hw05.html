@@ -24,7 +24,7 @@
         uniform mat4 ProjectionMatrix;
         uniform mat4 ModelviewMatrix;
         uniform mat3 NormalMatrix;
-        unifrom mat4 ViewMatrix;
+        uniform mat4 ViewMatrix;
 
         uniform float fov;
         uniform vec4 Global;
@@ -79,7 +79,7 @@
             vec3 V = normalize(FragView);
             
             vec4 color = FragAmbient;
-            fload Id = dot(L,N);
+            float Id = dot(L,N);
             if(Id>0.0) {
                 color += Id*Diffuse*FrontColor;
                 vec3 H = normalize(V+L);
