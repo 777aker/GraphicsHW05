@@ -315,9 +315,9 @@
                 var ambient = [0.3, 0.3, 0.3, 1.0];
                 var diffuse = [0.8, 0.8, 0.8, 1.0];
                 var specular = [1.0, 1.0, 1.0, 1.0];
-                var position = [2.0, 3 * Math.cos(light1*Math.PI/180), 3 * Math.sin(Light2*Math.PI/180), 1.0];
-                Light1 = (Light1 + .01) % 360;
-                Light2 = (Light2 + .001) % 360;
+                var position = [2.0, 3 * Math.cos(light1*Math.PI/180), 3 * Math.sin(light2*Math.PI/180), 1.0];
+                light1 = (light1 + .01) % 360;
+                light2 = (light2 + .001) % 360;
                 gl.uniform4fv(gl.getUniformLocation(prog, "Global"), global);
                 gl.uniform4fv(gl.getUniformLocation(prog, "Ambient"), ambient);
                 gl.uniform4fv(gl.getUniformLocation(prog, "Diffuse"), diffuse);
