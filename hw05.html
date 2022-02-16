@@ -273,7 +273,7 @@
 
                 var ViewMatrix = new mat4();
 
-                var normat = [1,0,0, 0,1,0, 0,0,1];
+                //var normat = [1,0,0, 0,1,0, 0,0,1];
 
                 // Set shader
                 gl.useProgram(prog);
@@ -282,7 +282,7 @@
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ProjectionMatrix"), false, ProjectionMatrix.getMat());
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ModelviewMatrix"), false, ModelviewMatrix.getMat());
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ViewMatrix"), false, ViewMatrix.getMat());
-                gl.uniformMatrix3fv(gl.getUniformLocation(prog, "NormalMatrix"), false, normat);
+                gl.uniformMatrix3fv(gl.getUniformLocation(prog, "NormalMatrix"), false, ModelviewMatrix.normalMatrix());
 
                 //  Bind cube buffer
                 gl.bindBuffer(gl.ARRAY_BUFFER, cube);
