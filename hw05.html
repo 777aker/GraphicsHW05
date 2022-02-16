@@ -282,7 +282,7 @@
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ProjectionMatrix"), false, ProjectionMatrix.getMat());
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ModelviewMatrix"), false, ModelviewMatrix.getMat());
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ViewMatrix"), false, ViewMatrix.getMat());
-                gl.uniformMatrix3fv(gl.getUniformLocation(prog, "NormalMatrix"), false, normat.normalMatrix());
+                gl.uniformMatrix3fv(gl.getUniformLocation(prog, "NormalMatrix"), false, normat);
 
                 //  Bind cube buffer
                 gl.bindBuffer(gl.ARRAY_BUFFER, cube);
