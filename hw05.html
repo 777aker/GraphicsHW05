@@ -81,7 +81,7 @@
             vec4 color = FragAmbient;
             float Id = dot(L,N);
             if(Id>0.0) {
-                color += Id*Diffuse*vec4(col,1);
+                color += Id*Diffuse;
                 vec3 H = normalize(V+L);
                 float Is = dot(H,N);
                 if(Is>0.0) color += pow(Is,8.0) * Specular;
@@ -91,7 +91,7 @@
 
         void main(void)
         {
-            gl_FragColor = blinn() * vec4(col,1) * texture2D(tex,t2d);
+            gl_FragColor = blinn() * texture2D(tex,t2d);
         }
     </script>
 
@@ -273,13 +273,15 @@
                 ModelviewMatrix.rotate(ph, 0, 1, 0);
                 ModelviewMatrix.rotate(th, 1, 0, 0);
 
+                var ViewMatrix = new mat4();
+
                 // Set shader
                 gl.useProgram(prog);
 
                 //  Set projection and modelview matrixes
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ProjectionMatrix"), false, ProjectionMatrix.getMat());
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ModelviewMatrix"), false, ModelviewMatrix.getMat());
-                gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ViewMatrix"), false, ModelviewMatrix.getMat());
+                gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ViewMatrix"), false, ViewMatrix.getMat());
                 gl.uniformMatrix3fv(gl.getUniformLocation(prog, "NormalMatrix"), false, ModelviewMatrix.normalMatrix());
 
                 //  Bind cube buffer
@@ -367,12 +369,23 @@
                 Display();
             }
 
-            canvas.onkeypress = function (ev) {
-                if (ev.key == "d")
-                    light1 += 1;
-                if (ev.key == "a")
-                    light1 -= 1;
-            }
+            document.addEventListener('keydown', (event) => {
+                var name = event.key;
+                var code = event.code;
+                if (name == "d") {
+                    light1 += .5;
+                }
+                if (name == "a") {
+                    light1 -= .5;
+                }
+                if (name == "w") {
+                    light2 += .5;
+                }
+                if (name == "s") {
+                    light2 -= .5;
+                }
+                Display();
+            }, false);
         }
     </script>
 
