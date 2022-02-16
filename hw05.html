@@ -44,7 +44,7 @@
             col = RGB;
             t2d = T2D;
 
-            vec3 P = vec3(ModelViewMatrix * vec4(XYZ,1));
+            vec3 P = vec3(ModelviewMatrix * vec4(XYZ,1));
             FragLight = vec3(ViewMatrix * Position) - P;
             FragNormal = NormalMatrix * Normal;
             FragView = -P;
@@ -81,7 +81,7 @@
             vec4 color = FragAmbient;
             float Id = dot(L,N);
             if(Id>0.0) {
-                color += Id*Diffuse*FrontColor;
+                color += Id*Diffuse*vec4(col,1);
                 vec3 H = normalize(V+L);
                 float Is = dot(H,N);
                 if(Is>0.0) color += pow(Is,8.0) * Specular;
