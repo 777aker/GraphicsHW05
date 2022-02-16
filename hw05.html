@@ -15,18 +15,42 @@
       -->
     <script id="shader-vs" type="x-shader/x-vertex">
         precision highp float;
+
         attribute vec3 XYZ;
         attribute vec3 RGB;
         attribute vec2 T2D;
+        attribute vec3 Normal;
+
         uniform mat4 ProjectionMatrix;
         uniform mat4 ModelviewMatrix;
+        uniform mat3 NormalMatrix;
+        unifrom mat4 ViewMatrix;
+
+        uniform float fov;
+        uniform vec4 Global;
+        uniform vec4 Ambient;
+        uniform vec4 Position;
+
+        varying vec3 FragView;
+        varying vec3 FragLight;
+        varying vec3 FragNormal;
+        varying vec3 FragAmbient;
+
         varying vec3 col;
         varying vec2 t2d;
+
         void main(void)
         {
-           col = RGB;
-           t2d = T2D;
-           gl_Position = ProjectionMatrix * ModelviewMatrix * vec4(XYZ,1);
+            col = RGB;
+            t2d = T2D;
+
+            vec3 P = vec3(ModelViewMatrix * vec4(XYZ,1));
+            FragLight = vec3(ViewMatrix * Position) - P;
+            FragNormal = NormalMatrix * Normal;
+            FragView = -P;
+            FragAmbient = (Global + Ambient) * vec4(RGB, 1);
+
+            gl_Position = ProjectionMatrix * ModelviewMatrix * vec4(XYZ,1);
         }
     </script>
 
@@ -35,12 +59,40 @@
       -->
     <script id="shader-fs" type="x-shader/x-fragment">
         precision highp float;
+
         varying vec3 col;
         varying vec2 t2d;
+
         uniform sampler2D tex;
+
+        varying vec3 FragView;
+        varying vec3 FragLight;
+        varying vec3 FragNormal;
+        varying vec4 FragAmbient;
+
+        uniform vec4 Specular;
+        uniform vec4 Diffuse;
+
+        vec4 blinn() {
+            vec3 N = normalize(FragNormal);
+            vec3 L = normalize(FragLight);
+            vec3 V = normalize(FragView);
+            
+            vec4 color = FragAmbient;
+            fload Id = dot(L,N);
+            if(Id>0.0) {
+                color += Id*Diffuse*FrontColor;
+                vec3 H = normalize(V+L);
+                float Is = dot(H,N);
+                if(Is>0.0) color += pow(Is,8.0) * Specular;
+            }
+            return color;
+        }
+
         void main(void)
         {
-           gl_FragColor = vec4(col,1) * texture2D(tex,t2d);
+            
+            gl_FragColor = blinn() * vec4(col,1) * texture2D(tex,t2d);
         }
     </script>
 
@@ -136,42 +188,48 @@
             //  Cube vertex, color and texture
             var cube_data =
                 [
-                    -1, -1, 1, 1, 0, 0, 0, 1,
-                    +1, -1, 1, 1, 0, 0, 1, 1,
-                    -1, +1, 1, 1, 0, 0, 0, 0,
-                    -1, +1, 1, 1, 0, 0, 0, 0,
-                    +1, -1, 1, 1, 0, 0, 1, 1,
-                    +1, +1, 1, 1, 0, 0, 1, 0,
-                    +1, -1, -1, 0, 0, 1, 0, 1,
-                    -1, -1, -1, 0, 0, 1, 1, 1,
-                    +1, +1, -1, 0, 0, 1, 0, 0,
-                    +1, +1, -1, 0, 0, 1, 0, 0,
-                    -1, -1, -1, 0, 0, 1, 1, 1,
-                    -1, +1, -1, 0, 0, 1, 1, 0,
-                    +1, -1, +1, 1, 1, 0, 0, 1,
-                    +1, -1, -1, 1, 1, 0, 1, 1,
-                    +1, +1, +1, 1, 1, 0, 0, 0,
-                    +1, +1, +1, 1, 1, 0, 0, 0,
-                    +1, -1, -1, 1, 1, 0, 1, 1,
-                    +1, +1, -1, 1, 1, 0, 1, 0,
-                    -1, -1, -1, 0, 1, 0, 0, 1,
-                    -1, -1, +1, 0, 1, 0, 1, 1,
-                    -1, +1, -1, 0, 1, 0, 0, 0,
-                    -1, +1, -1, 0, 1, 0, 0, 0,
-                    -1, -1, +1, 0, 1, 0, 1, 1,
-                    -1, +1, +1, 0, 1, 0, 1, 0,
-                    -1, +1, +1, 0, 1, 1, 0, 1,
-                    +1, +1, +1, 0, 1, 1, 1, 1,
-                    -1, +1, -1, 0, 1, 1, 0, 0,
-                    -1, +1, -1, 0, 1, 1, 0, 0,
-                    +1, +1, +1, 0, 1, 1, 1, 1,
-                    +1, +1, -1, 0, 1, 1, 1, 0,
-                    -1, -1, -1, 1, 0, 1, 0, 1,
-                    +1, -1, -1, 1, 0, 1, 1, 1,
-                    -1, -1, +1, 1, 0, 1, 0, 0,
-                    -1, -1, +1, 1, 0, 1, 0, 0,
-                    +1, -1, -1, 1, 0, 1, 1, 1,
-                    +1, -1, +1, 1, 0, 1, 1, 0,
+                    //  Front
+                    +1, +1, +1, +1, 0, 0, +1, 1, 0, 0, 1, 1, 1,
+                    -1, +1, +1, +1, 0, 0, +1, 1, 0, 0, 1, 0, 1,
+                    +1, -1, +1, +1, 0, 0, +1, 1, 0, 0, 1, 1, 0,
+                    -1, +1, +1, +1, 0, 0, +1, 1, 0, 0, 1, 0, 1,
+                    +1, -1, +1, +1, 0, 0, +1, 1, 0, 0, 1, 1, 0,
+                    -1, -1, +1, +1, 0, 0, +1, 1, 0, 0, 1, 0, 0,
+                    //  Back                        
+                    -1, -1, -1, +1, 0, 0, -1, 0, 0, 1, 1, 1, 0,
+                    +1, -1, -1, +1, 0, 0, -1, 0, 0, 1, 1, 0, 0,
+                    -1, +1, -1, +1, 0, 0, -1, 0, 0, 1, 1, 1, 1,
+                    +1, -1, -1, +1, 0, 0, -1, 0, 0, 1, 1, 0, 0,
+                    -1, +1, -1, +1, 0, 0, -1, 0, 0, 1, 1, 1, 1,
+                    +1, +1, -1, +1, 0, 0, -1, 0, 0, 1, 1, 0, 1,
+                    //  Right                       
+                    +1, +1, +1, +1, +1, 0, 0, 1, 1, 0, 1, 0, 1,
+                    +1, -1, +1, +1, +1, 0, 0, 1, 1, 0, 1, 0, 0,
+                    +1, +1, -1, +1, +1, 0, 0, 1, 1, 0, 1, 1, 1,
+                    +1, -1, +1, +1, +1, 0, 0, 1, 1, 0, 1, 0, 0,
+                    +1, +1, -1, +1, +1, 0, 0, 1, 1, 0, 1, 1, 1,
+                    +1, -1, -1, +1, +1, 0, 0, 1, 1, 0, 1, 1, 0,
+                    //  Left                        
+                    -1, +1, +1, +1, -1, 0, 0, 0, 1, 0, 1, 1, 1,
+                    -1, +1, -1, +1, -1, 0, 0, 0, 1, 0, 1, 0, 1,
+                    -1, -1, +1, +1, -1, 0, 0, 0, 1, 0, 1, 1, 0,
+                    -1, +1, -1, +1, -1, 0, 0, 0, 1, 0, 1, 0, 1,
+                    -1, -1, +1, +1, -1, 0, 0, 0, 1, 0, 1, 1, 0,
+                    -1, -1, -1, +1, -1, 0, 0, 0, 1, 0, 1, 0, 0,
+                    //  Top                         
+                    +1, +1, +1, +1, 0, +1, 0, 0, 1, 1, 1, 1, 0,
+                    +1, +1, -1, +1, 0, +1, 0, 0, 1, 1, 1, 1, 1,
+                    -1, +1, +1, +1, 0, +1, 0, 0, 1, 1, 1, 0, 0,
+                    +1, +1, -1, +1, 0, +1, 0, 0, 1, 1, 1, 1, 1,
+                    -1, +1, +1, +1, 0, +1, 0, 0, 1, 1, 1, 0, 0,
+                    -1, +1, -1, +1, 0, +1, 0, 0, 1, 1, 1, 0, 1,
+                    //  Bottom                      
+                    -1, -1, -1, +1, 0, -1, 0, 1, 0, 1, 1, 0, 0,
+                    +1, -1, -1, +1, 0, -1, 0, 1, 0, 1, 1, 1, 0,
+                    -1, -1, +1, +1, 0, -1, 0, 1, 0, 1, 1, 0, 1,
+                    +1, -1, -1, +1, 0, -1, 0, 1, 0, 1, 1, 1, 0,
+                    -1, -1, +1, +1, 0, -1, 0, 1, 0, 1, 1, 0, 1,
+                    +1, -1, +1, +1, 0, -1, 0, 1, 0, 1, 1, 1, 1,
                 ];
             var cube = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, cube);
@@ -213,27 +271,37 @@
                 ModelviewMatrix.rotate(ph, 0, 1, 0);
                 ModelviewMatrix.rotate(th, 1, 0, 0);
 
+                var ViewMatrix = new mat4();
+
+                var normat = new mat4();
+
                 // Set shader
                 gl.useProgram(prog);
 
                 //  Set projection and modelview matrixes
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ProjectionMatrix"), false, ProjectionMatrix.getMat());
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ModelviewMatrix"), false, ModelviewMatrix.getMat());
+                gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ViewMatrix"), false, ViewMatrix.getMat());
+                gl.uniformMatrix4fv(gl.getUniformLocation(prog, "NormalMatrix"), false, normat.normalMatrix());
 
                 //  Bind cube buffer
                 gl.bindBuffer(gl.ARRAY_BUFFER, cube);
                 //  Set up 3D vertex array
                 var XYZ = gl.getAttribLocation(prog, "XYZ");
                 gl.enableVertexAttribArray(XYZ);
-                gl.vertexAttribPointer(XYZ, 3, gl.FLOAT, false, 32, 0);
+                gl.vertexAttribPointer(XYZ, 3, gl.FLOAT, false, 44, 0);
                 //  Set up 3D color array
                 var RGB = gl.getAttribLocation(prog, "RGB");
                 gl.enableVertexAttribArray(RGB);
-                gl.vertexAttribPointer(RGB, 3, gl.FLOAT, false, 32, 12);
+                gl.vertexAttribPointer(RGB, 3, gl.FLOAT, false, 44, 24);
                 //  Set up 2D texture array
                 var T2D = gl.getAttribLocation(prog, "T2D");
                 gl.enableVertexAttribArray(T2D);
-                gl.vertexAttribPointer(T2D, 2, gl.FLOAT, false, 32, 24);
+                gl.vertexAttribPointer(T2D, 2, gl.FLOAT, false, 44, 36);
+                // Set up normal array
+                var norms = gl.getAttribLocation(prog, "Normal");
+                gl.enableVertexAttribArray(norms);
+                gl.vertexAttribPointer(norms, 3, gl.FLOAT, false, 44, 12)
 
                 //  Draw all vertexes
                 gl.drawArrays(gl.TRIANGLES, 0, n);
@@ -242,7 +310,19 @@
                 gl.disableVertexAttribArray(XYZ);
                 gl.disableVertexAttribArray(RGB);
                 gl.disableVertexAttribArray(T2D);
+                gl.disableVertexAttribArray(norms);
 
+                // lighting set up
+                var global = [0.1, 0.1, 0.1, 1.0];
+                var ambient = [0.3, 0.3, 0.3, 1.0];
+                var diffuse = [0.8, 0.8, 0.8, 1.0];
+                var specular = [1.0, 1.0, 1.0, 1.0];
+                var position = [2.0, 2.0, 2.0, 1.0];
+                gl.uniform4fv(gl.getUniformLocation(prog, "Global"), false, global);
+                gl.uniform4fv(gl.getUniformLocation(prog, "Ambient"), false, ambient);
+                gl.uniform4fv(gl.getUniformLocation(prog, "Diffuse"), false, diffuse);
+                gl.uniform4fv(gl.getUniformLocation(prog, "Specular"), false, specular);
+                gl.uniform4fv(gl.getUniformLocation(prog, "Position"), false, position);
                 //  Flush
                 gl.flush();
             }
