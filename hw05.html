@@ -91,7 +91,6 @@
 
         void main(void)
         {
-            
             gl_FragColor = blinn() * vec4(col,1) * texture2D(tex,t2d);
         }
     </script>
@@ -271,17 +270,13 @@
                 ModelviewMatrix.rotate(ph, 0, 1, 0);
                 ModelviewMatrix.rotate(th, 1, 0, 0);
 
-                var ViewMatrix = new mat4();
-
-                //var normat = [1,0,0, 0,1,0, 0,0,1];
-
                 // Set shader
                 gl.useProgram(prog);
 
                 //  Set projection and modelview matrixes
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ProjectionMatrix"), false, ProjectionMatrix.getMat());
                 gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ModelviewMatrix"), false, ModelviewMatrix.getMat());
-                gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ViewMatrix"), false, ViewMatrix.getMat());
+                gl.uniformMatrix4fv(gl.getUniformLocation(prog, "ViewMatrix"), false, ModelviewMatrix.getMat());
                 gl.uniformMatrix3fv(gl.getUniformLocation(prog, "NormalMatrix"), false, ModelviewMatrix.normalMatrix());
 
                 //  Bind cube buffer
