@@ -318,11 +318,11 @@
                 var diffuse = [0.8, 0.8, 0.8, 1.0];
                 var specular = [1.0, 1.0, 1.0, 1.0];
                 var position = [2.0, 2.0, 2.0, 1.0];
-                gl.uniform4fv(gl.getUniformLocation(prog, "Global"), 1, global);
-                gl.uniform4fv(gl.getUniformLocation(prog, "Ambient"), 1, ambient);
-                gl.uniform4fv(gl.getUniformLocation(prog, "Diffuse"), 1, diffuse);
-                gl.uniform4fv(gl.getUniformLocation(prog, "Specular"), 1, specular);
-                gl.uniform4fv(gl.getUniformLocation(prog, "Position"), 1, position);
+                gl.uniform4fv(gl.getUniformLocation(prog, "Global"), global);
+                gl.uniform4fv(gl.getUniformLocation(prog, "Ambient"), ambient);
+                gl.uniform4fv(gl.getUniformLocation(prog, "Diffuse"), diffuse);
+                gl.uniform4fv(gl.getUniformLocation(prog, "Specular"), specular);
+                gl.uniform4fv(gl.getUniformLocation(prog, "Position"), position);
                 //  Flush
                 gl.flush();
             }
