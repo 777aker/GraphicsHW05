@@ -312,7 +312,7 @@
                 var ambient = [0.3, 0.3, 0.3, 1.0];
                 var diffuse = [0.8, 0.8, 0.8, 1.0];
                 var specular = [1.0, 1.0, 1.0, 1.0];
-                var position = [2.0, 2.0, 2.0, 1.0];
+                var position = [2.0, 2.0, -2.0, 1.0];
                 gl.uniform4fv(gl.getUniformLocation(prog, "Global"), global);
                 gl.uniform4fv(gl.getUniformLocation(prog, "Ambient"), ambient);
                 gl.uniform4fv(gl.getUniformLocation(prog, "Diffuse"), diffuse);
