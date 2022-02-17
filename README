@@ -1,6 +1,6 @@
 Kelley Kelley HW05: WebGL
 
-Time spent: 4 hours at 4pm
+Time spent: 6 hours
 
 You can view the homework at https://777aker.github.io/GraphicsHW05/hw05.html
 
@@ -8,3 +8,5 @@ Based on example 7.
 Controls:
     mouse click to rotate the object
     wasd to move to light around (only in yz direction)
+    m switch between objects
+    n change draw mode (I just thought this was fun)
