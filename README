@@ -4,7 +4,13 @@ Time spent: 6 hours
 
 You can view the homework at https://777aker.github.io/GraphicsHW05/hw05.html
 
-Based on example 7. 
+Based on example 7. Added lighting
+Formatted an obj file into vertex, normal, color, texture
+because couldn't figure out how to load a text file
+realized a little too late though that they don't quite
+work how I thought they did and I'd need to also
+look at the f row in the obj file and point everything
+to the right spot which is a bit much for 3000 vertices
 Controls:
     mouse click to rotate the object
     wasd to move to light around (only in yz direction)
