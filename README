@@ -13,6 +13,7 @@ look at the f row in the obj file and point everything
 to the right spot which is a bit much for 3000 vertices
 I went ahead and tried to hackily fix it but uh, looks mostly
 the same. Fan mode on it kind of looks cool
+Kept the cube in so you can actually tell lighting and textures work
 Controls:
     mouse click to rotate the object
     wasd to move to light around (only in yz direction)
