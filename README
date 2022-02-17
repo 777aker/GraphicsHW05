@@ -1,6 +1,6 @@
 Kelley Kelley HW05: WebGL
 
-Time spent: 6 hours
+Time spent: 7 hours
 
 You can view the homework at https://777aker.github.io/GraphicsHW05/hw05.html
 
@@ -11,6 +11,8 @@ realized a little too late though that they don't quite
 work how I thought they did and I'd need to also
 look at the f row in the obj file and point everything
 to the right spot which is a bit much for 3000 vertices
+I went ahead and tried to hackily fix it but uh, looks mostly
+the same. Fan mode on it kind of looks cool
 Controls:
     mouse click to rotate the object
     wasd to move to light around (only in yz direction)
